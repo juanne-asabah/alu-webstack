@@ -1,22 +1,17 @@
 #!/usr/bin/env bash
-# Displays DNS record information for specified domain and subdomains
+# Display DNS record information for subdomains
 
-display_record() {
-    local sub="$1"
-    local dom="$2"
-    local ans
-    ans=$(dig +noall +answer "$sub.$dom" | awk 'NR==1 {print $4, $5}')
-    local record_type
-    local dest
-    record_type=$(echo "$ans" | awk '{print $1}')
-    dest=$(echo "$ans" | awk '{print $2}')
-    echo "The subdomain $sub is a $record_type record and points to $dest"
+display_dns() {
+	record=$(dig "$2.$1" | grep -A1 'ANSWER SECTION:' | tail -n 1)
+	rec_type=$(echo "$record" | awk '{print $4}')
+	dest=$(echo "$record" | awk '{print $5}')
+	echo "The subdomain $2 is a $rec_type record and points to $dest"
 }
 
 if [ $# -eq 1 ]; then
-    for sub in www lb-01 web-01 web-02; do
-        display_record "$sub" "$1"
-    done
+	for sub in www lb-01 web-01 web-02; do
+		display_dns "$1" "$sub"
+	done
 elif [ $# -eq 2 ]; then
-    display_record "$2" "$1"
+	display_dns "$1" "$2"
 fi
