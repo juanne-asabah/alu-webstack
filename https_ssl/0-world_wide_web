@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Display DNS record information for subdomains
+# shellcheck disable=SC2086
+# Displays DNS record info for subdomains of a given domain.
 
-display_dns() {
-	record=$(dig "$2.$1" | grep -A1 'ANSWER SECTION:' | tail -n 1)
-	rec_type=$(echo "$record" | awk '{print $4}')
-	dest=$(echo "$record" | awk '{print $5}')
-	echo "The subdomain $2 is a $rec_type record and points to $dest"
+display_info() {
+    local domain="$1"
+    local sub="$2"
+    dig "$sub.$domain" | grep -A1 'ANSWER SECTION:' | tail -n 1 | awk -v s="$sub" '{print "The subdomain " s " is a " $4 " record and points to " $5}'
 }
 
-if [ $# -eq 1 ]; then
-	for sub in www lb-01 web-01 web-02; do
-		display_dns "$1" "$sub"
-	done
-elif [ $# -eq 2 ]; then
-	display_dns "$1" "$2"
+if [ -n "$2" ]; then
+    display_info "$1" "$2"
+else
+    for sub in www lb-01 web-01 web-02; do
+        display_info "$1" "$sub"
+    done
 fi
