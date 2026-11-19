@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
+# Displays DNS record info for subdomains of a given domain
 # shellcheck disable=SC2086
-# Displays DNS record info for subdomains of a given domain.
 
 display_info() {
     local domain="$1"
